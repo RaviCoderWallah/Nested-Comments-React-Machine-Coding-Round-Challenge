@@ -15,8 +15,6 @@ const commentData = [
   }
 ];
 
-console.log(commentData);
-
 const App = () => {
   const [allComments, setAllComments] = useState(commentData);
   const [inputValue, setInputValue] = useState("");
@@ -38,10 +36,10 @@ const App = () => {
     setInputValue("");
   }
 
-  const handleReply = (parentId, replyMessage) => {
+  const handleReply = (parentID, replyMessage) => {
     const addReplyToComment = (comments) => {
       return comments.map((comment) => {
-        if (comment.id === parentId) {
+        if (comment.id === parentID) {
           return {
             ...comment,
             children: [
@@ -52,22 +50,36 @@ const App = () => {
                 children: []
               }
             ]
-          };
+          }
         }
 
-        if (comment.children.length > 0) {
+        if(comment.children.length > 0) {
           return {
             ...comment,
             children: addReplyToComment(comment.children)
-          };
+          }
         }
 
         return comment;
-      });
-    };
+      })
+    }
 
     setAllComments((prevComments) => addReplyToComment(prevComments));
   }
+
+  const handleDeleteComment = (id) => {
+    const deleteCommentFromTree = (comments) => {
+      return comments
+        .filter((comment) => comment.id !== id)
+        .map((comment) => ({
+          ...comment,
+          children: deleteCommentFromTree(comment.children)
+        }));
+    };
+
+    setAllComments((prevComments) => deleteCommentFromTree(prevComments));
+  }
+
 
   return (
     <div className="mt-10 mx-10">
@@ -86,9 +98,9 @@ const App = () => {
 
       {/* comments show area  */}
       {
-        allComments.length &&
+        allComments.length > 0 &&
         allComments.map((item) => {
-          return <CommentBox key={item.id} data={item} depth={0} onReply={handleReply} />
+          return <CommentBox key={item.id} data={item} depth={0} onReply={handleReply} onDelete={handleDeleteComment} />
         })
       }
     </div>

@@ -1,13 +1,14 @@
 import { useState } from "react"
 import UserIconImage from "../assets/free-user-icon-3296-thumb.png"
 
-const CommentBox = ({data, depth, onReply}) => {
+const CommentBox = ({data, depth, onReply, onDelete}) => {
     const [isReplyBoxShow, setIsReplyBoxShow] = useState(false);
     const [replyInputValue, setReplyInputValue] = useState("");
 
     // Handle cancel event trigger 
     const handleOnCancel = () => {
         setIsReplyBoxShow(false);
+        setReplyInputValue("");
     }
 
     //Handle comment reply trigger
@@ -28,6 +29,10 @@ const CommentBox = ({data, depth, onReply}) => {
         }
     }
 
+    const handleDelete = (id) => {
+       onDelete(id);
+    }
+
     return (
         <>
             <div className="my-6 bg-gray-100 max-w-full p-2 rounded-lg flex items-center gap-4 border-l-6 border-blue-500" style={{ marginLeft: depth * 40 }}>
@@ -38,7 +43,7 @@ const CommentBox = ({data, depth, onReply}) => {
                         !isReplyBoxShow &&
                         <div className="flex items-center gap-2">
                             <button className="px-2 py-1 bg-blue-500 text-white text-sm rounded-sm" onClick={handleCommentReply}>Reply</button>
-                            <button className="px-2 py-1  bg-red-700 text-white text-sm rounded-sm">Delete</button>
+                            <button className="px-2 py-1  bg-red-700 text-white text-sm rounded-sm" onClick={() => handleDelete(data.id)}>Delete</button>
                         </div>
                     }
                     {
@@ -60,7 +65,7 @@ const CommentBox = ({data, depth, onReply}) => {
             {
                 data.children && data.children.length > 0 &&
                 data.children.map((item) => {
-                    return <CommentBox key={item.id} data={item} depth={depth + 1} onReply={onReply}/>
+                    return <CommentBox key={item.id} data={item} depth={depth + 1} onReply={onReply} onDelete={onDelete}/>
                 })
             }
         </>
